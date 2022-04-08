@@ -1,0 +1,11 @@
+{
+  "json_path": "./Tools/dataset_Croped_nii_0224_resized.json",
+  "structure": "Classification",
+  "max_epochs": 50,
+  "continue_training": false,
+  "batch_size": 8,
+  "learning_rate": 1e-5,
+  "val_interval":1,
+  "pretrain_path":"",
+  "device_type":"cuda:0"
+}
