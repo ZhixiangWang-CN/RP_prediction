@@ -309,6 +309,6 @@ if __name__ == '__main__':
 
     para_path = './parameters/' + args.parameters
 
-    with open(para_path, 'r') as f:  
+    with open(para_path, 'r') as f:
         data_para = json.load(f)
     train(data_para)

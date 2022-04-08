@@ -51,22 +51,20 @@ def train(parameters):
     data_path = parameters["json_path"]
     learning_rate = parameters["learning_rate"]
     pretrain_path =parameters["pretrain_path"]
-    best_auc=0
+
     train_ds,val_ds=read_data_ds(data_path)
     _,test_ds = read_data_ds(data_path,section='test')
-    # 读取数据
+
     train_loader = DataLoader(train_ds, batch_size=1, shuffle=False, drop_last=True, num_workers=2)
-    val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, drop_last=True, num_workers=2)
-    test_loader = DataLoader(test_ds, batch_size=1, shuffle=False, drop_last=True, num_workers=2)
+
     time_save = time.strftime("%Y_%m_%d_%H_%M", time.localtime())
     out_path = './test_results/' + structure + '/' + time_save + '/'
 
-    # pic_save_path = out_path + 'images/'
+
 
 
     load_path = './training_results/' + structure + '/'
 
-    # 定义判别器  #####Discriminator######使用多层网络来作为判别器
 
     net = load_model(structure)
 
@@ -75,17 +73,13 @@ def train(parameters):
 
 
 
-    save_num=0
-    best_recall=0
-    auc_list = []
-    min_epoch_loss= 99
+
 
     print('loading model............')
 
     net.load_state_dict(torch.load(load_path + 'bestmodel.pth'))
 
-    # for layer, param in net.state_dict().items():  # param is weight or bias(Tensor)
-    #     print(layer, param)
+
     checkpoint = torch.load(load_path + 'bestmodel.pth')
     for k, v in checkpoint.items():
         print(k)
@@ -96,18 +90,7 @@ def train(parameters):
     # net = gcam.inject(net_, output_dir=out_path + layer, backend=Method, layer=layer, label=1, save_maps=True)
     net.to(device)
     net = gcam.inject(net, output_dir=out_path, backend=Method, layer=layer, label=0, save_maps=True)
-    # loss_function = torch.nn.CrossEntropyLoss(weight=torch.from_numpy(np.array([1/270,1/70])).float()).to(device)
-    loss_function = torch.nn.BCELoss()
-    # optimizer = torch.optim.Adam(net.parameters(), learning_rate,weight_decay=0.01)
-    optimizer = torch.optim.Adam(net.parameters(), learning_rate)
-    # start a typical PyTorch training
-    val_interval = 2
-    best_metric = -1
-    best_metric_epoch = -1
-    epoch_loss_values = []
-    metric_values = []
-    writer = SummaryWriter()
-    max_epochs = num_epoch
+
 
     print("Test===============================")
 
@@ -119,32 +102,23 @@ def train(parameters):
         inputs = torch.cat((inputs_CT, inputs_RD), dim=1)
         labels = val_data['Label'].cuda()
         val_outputs = net(inputs)
-        # print(i)
+
         label = labels[0].item()
         patient_name = val_data['Patient_name'][0]
         loader_path =out_path+layer+'/attention_map_'+str(i)+'_0_0.nii.gz'
         IMG_map = sitk.ReadImage(loader_path, sitk.sitkFloat32)
         IMG_map = sitk.GetArrayFromImage(IMG_map)
         image_resized = resize(IMG_map, (84, 84, 84))
-        ##注意这行只能对ggcam使用
-
-        # vals, counts = np.unique(image_resized, return_counts=True)
-        # index = np.argmax(counts)
-        # minn = image_resized.min()
-        # image_resized[image_resized==index]=minn
 
 
         image_resized = (image_resized - image_resized.min()) / (image_resized.max() - image_resized.min())
         inputs_CT=inputs_CT[0,0].cpu().detach().numpy()
         inputs_RD = inputs_RD[0, 0].cpu().detach().numpy()
-        # outwithRD = outwithRD[0].cpu().detach().numpy()
+
         img_save_name = out_path+patient_name+'.png'
 
         Image_list = [inputs_CT,image_resized]
-        down_size=4
-        # plot_3D_list(
-        #     Image_list,img_save_name,down_size
-        # )
+
         img_save_name = out_path + patient_name
         CT_IMG = sitk.GetImageFromArray(inputs_CT)
         sitk.WriteImage(CT_IMG,img_save_name+'_'+str(label)+'CT.nii.gz')
@@ -153,9 +127,6 @@ def train(parameters):
         MAP = sitk.GetImageFromArray(image_resized)
         sitk.WriteImage(MAP, img_save_name +'_'+str(label)+ 'MAP.nii.gz')
         print("SAVING...",img_save_name)
-    # AUC = metrics.roc_auc_score(label_list, pre_list)
-    # print("Test AUC====",AUC)
-    # writer.add_scalar("test_AUC", AUC, epoch + 1)
         i+=1
 
 
