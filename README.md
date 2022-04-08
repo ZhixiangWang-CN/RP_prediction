@@ -17,14 +17,17 @@ For training the model in your own data:
 1. create your dataset.json by Tools/convert_dataset_to_json
 2. Change the Parameters/Img_classification.json according your dataset and your model
 3. run 
-'''python Training.py'''
+```python Training.py```
 
 For test your model:
-'''python Test.py'''
+run
+```python Test.py```
 
 
 For Fine tuining the model by other dataset:
-'''python Fine_tuining.py'''
+run
+```python Fine_tuining.py```
 
 For plot the attention map:
-'''python Test_and_attention_plot3D'''
+run
+```python Test_and_attention_plot3D```
