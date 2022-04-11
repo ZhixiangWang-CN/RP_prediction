@@ -1,7 +1,7 @@
 ### RP_prediction
 ***
-This project is comes from the article 
-" xxxxxxxxxxxxxxxxxxxxxx"
+This project is comes from the article <br>
+" Computed tomography and radiation dose images-based deep-learning model for predicting radiation pneumonitis in lung cancer patients after radiation therapy: A pilot study with external validation"
 ***
 The online project was shown in:
 
